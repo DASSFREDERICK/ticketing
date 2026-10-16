@@ -1,0 +1,9 @@
+---
+#
+# Disable the built-in zammad-backup service, for example if backup is handled differently.
+#
+
+services:
+  zammad-backup:
+    profiles:
+      - do-not-start

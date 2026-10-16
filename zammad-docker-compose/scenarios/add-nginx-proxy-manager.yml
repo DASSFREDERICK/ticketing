@@ -1,0 +1,40 @@
+---
+#
+# Adds an nginx-proxy-manager service to the stack, for example to
+#   expose Zammad publicly via HTTPS.
+#
+
+# Both the railsserver and the websocket server need to know the proxy, because they
+#   determine the client IP independently of each other: the websocket server does its own
+#   X-Forwarded-For walk in lib/sessions/event/base.rb without going through rack, and the
+#   chat's geo-IP lookup and its IP/country blocking rely on the result.
+x-trusted-proxies: &trusted-proxies
+  RAILS_TRUSTED_PROXIES: ${RAILS_TRUSTED_PROXIES:-nginx-proxy-manager}
+
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager
+    restart: ${RESTART:-always}
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - nginx-proxy-manager-data:/data
+      - nginx-proxy-manager-letsencrypt:/etc/letsencrypt
+  zammad-nginx:
+    environment:
+      # nginx-proxy-manager terminates TLS and forwards plain HTTP, so the browser-facing
+      #   scheme must be configured here. Without it, Zammad does not write its 'Secure'
+      #   session cookie and login fails with "CSRF token verification failed!".
+      NGINX_SERVER_SCHEME: ${NGINX_SERVER_SCHEME:-https}
+    ports: !reset []
+  zammad-railsserver:
+    environment: *trusted-proxies
+  zammad-websocket:
+    environment: *trusted-proxies
+volumes:
+  nginx-proxy-manager-data:
+    driver: local
+  nginx-proxy-manager-letsencrypt:
+    driver: local

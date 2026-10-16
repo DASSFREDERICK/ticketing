@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Helix Ticketing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{--navy:#10203f;--bg:#fafbfd;--line:#e4e9f2;--ink:#111c33;--mute:#6b7690;--b:#2563eb;--b2:#1d4ed8;--bl:#e8f0ff;--red:#e5484d}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.5 Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}
+.i{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hide{display:none!important}.sp{flex:1}
+.bt{border:1px solid var(--line);background:#fff;padding:9px 16px;border-radius:8px;font-weight:500;transition:.15s}
+.bt:hover{background:#f1f5fb}.bt.p{background:var(--ink);border-color:var(--ink);color:#fff}.bt.p:hover{background:var(--b);border-color:var(--b)}
+.bt.r{background:#b4454b;border-color:#b4454b;color:#fff}.bt.r:hover{filter:brightness(1.08)}
+.bt.s{padding:4px 16px;color:var(--b);border-color:#cfdcf7}.bt:disabled{opacity:.6;cursor:wait}
+.ib{width:34px;height:34px;padding:0;display:grid;place-items:center;border:0;background:transparent;color:var(--mute);border-radius:8px}.ib:hover{background:#eef2f9}
+input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input:focus,textarea:focus,select:focus{border-color:var(--b);outline:0;box-shadow:0 0 0 3px #2563eb22}
+:focus-visible{outline:2px solid var(--b);outline-offset:2px}
+label{display:block;margin:16px 0 6px;font-weight:600;font-size:13px}
+.req{color:var(--red)}
+h1,h2,h3{margin:0}.ph{font-size:28px;font-weight:500;letter-spacing:-.03em}.sub{color:var(--mute);margin:4px 0 20px}
+.err{color:var(--red);min-height:20px;margin-top:8px;font-size:13px}
+/* login: minimal */
+#login{min-height:100vh;display:grid;place-items:center;padding:32px;background:#fafbfd}
+.lm{width:min(360px,100%);animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+.lw{text-align:center;margin-bottom:56px;line-height:1}
+.lw b{display:block;font-size:40px;font-weight:300;letter-spacing:.42em;margin-right:-.42em;color:var(--ink)}
+.lw small{display:block;margin-top:14px;font-size:11px;font-weight:500;letter-spacing:.6em;margin-right:-.6em;color:var(--mute)}
+#lf label{transition:color .2s;margin:22px 0 0;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+#lf label:has(+input:focus){color:var(--ink)}
+#lf input{border:0;border-bottom:1px solid #d5dcea;border-radius:0;background:transparent;padding:10px 0;font-size:15px;transition:border-color .2s}
+#lf input:focus{box-shadow:none;border-color:var(--ink)}
+#lf input:-webkit-autofill{-webkit-text-fill-color:var(--ink);-webkit-box-shadow:0 0 0 1000px #fafbfd inset}
+#lf .bt.p{width:100%;margin-top:14px;padding:13px;border-radius:6px;background:var(--ink);border-color:var(--ink);font-weight:500;letter-spacing:.06em}
+#lf .bt.p:hover{background:var(--b);border-color:var(--b)}
+/* shell */
+#app{display:flex;min-height:100vh}
+#app:not(.hide){animation:appin .5s ease-out}
+@keyframes appin{from{opacity:0}}
+.sb{width:232px;flex:none;background:#fff;color:#5b6578;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:22px 14px;border-right:1px solid var(--line)}
+.brand{padding:6px 12px 34px;color:var(--ink);line-height:1}
+.brand b{display:block;font-size:22px;font-weight:300;letter-spacing:.42em}
+.brand small{display:block;margin-top:7px;font-size:9.5px;font-weight:600;letter-spacing:.6em;color:var(--mute)}
+.nv{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border:0;background:transparent;color:#5b6578;border-radius:8px;margin-bottom:4px;text-align:left;font-weight:500}
+.nv:hover{background:#f1f4fa}.nv.on{background:var(--ink);color:#fff}
+.sbu{display:flex;align-items:center;gap:10px;padding:14px 8px 0;border-top:1px solid var(--line);margin-top:10px;color:var(--ink)}
+.sbu small{display:block;color:var(--mute)}
+.av{width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:600;font-size:13px;flex:none}
+.ws{flex:1;min-width:0}
+.tb{display:flex;align-items:center;gap:14px;padding:12px 30px;background:rgba(250,251,253,.88);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sw{position:relative;flex:1;max-width:420px}.sw .i{position:absolute;left:12px;top:10px;color:var(--mute)}.sw input{padding-left:38px;background:var(--bg)}
+.mlogo{display:none;flex-direction:column;line-height:1;color:var(--ink)}
+.mlogo b{font-size:16px;font-weight:300;letter-spacing:.34em}
+.mlogo small{margin-top:4px;font-size:8px;font-weight:600;letter-spacing:.46em;color:var(--mute)}
+.bw{position:relative}.bdg{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:10px;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px;pointer-events:none}
+#uw{position:relative}#ub{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:4px 6px;border-radius:8px;font-weight:600}
+#ub:hover{background:#eef2f9}#ub .av{width:32px;height:32px;background:var(--ink)}
+#um{position:absolute;right:0;top:46px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 40px #1a2a5026;min-width:190px;padding:6px;z-index:9}
+#um button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:9px 12px;border-radius:7px;text-align:left}#um button:hover{background:#eef2f9}
+#view{padding:28px 30px 40px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;border-color:#e9edf5}
+.card h2{font-size:16px;font-weight:600}.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+a[data-go]{color:var(--b);font-weight:500;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.sc{display:flex;gap:14px;align-items:center}.sc .ico{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none}
+.sc b{display:block;font-size:26px;line-height:1.1;font-weight:600}.sc span{font-size:13px;color:var(--mute)}.sc em{display:block;font-style:normal;font-size:12px;color:var(--mute)}
+.ico.b,.ico.g,.ico.o,.ico.p{background:#f1f4fa;color:var(--ink)}
+.g2{display:grid;grid-template-columns:1fr 330px;gap:20px;align-items:start}.side{display:grid;gap:20px}
+.help{background:#fff;display:flex;gap:14px;align-items:center}.help .ico{width:56px;height:56px;border-radius:14px;background:#f1f4fa;color:var(--ink);display:grid;place-items:center;flex:none}
+.help p{margin:2px 0 10px;color:var(--mute);font-size:13px}
+.qa{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:12px 14px;margin-top:10px}
+.qa:hover{background:#f6f9ff}.qa.p{background:var(--ink);border-color:var(--ink);color:#fff}.qa small{display:block;color:var(--mute)}.qa.p small{color:#b8c0d2}
+.qa .ico{width:36px;height:36px;border-radius:50%;background:#f1f4fa;color:var(--ink);display:grid;place-items:center;flex:none}.qa.p .ico{background:#ffffff30;color:#fff}
+.tbl{overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#fff;border-color:#e9edf5}
+.r{display:grid;gap:14px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line)}
+.r:last-child{border-bottom:0}.r.h{background:transparent;color:var(--mute);font-size:11px;font-weight:600;padding:10px 18px;text-transform:uppercase;letter-spacing:.08em}
+.c5{grid-template-columns:90px 1.8fr 120px 100px 150px}.c7{grid-template-columns:90px 1.8fr 120px 100px 140px 110px 80px}
+.r.d{cursor:pointer}.r.d:hover{background:#f6f9ff}.r .t{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.id{color:var(--mute);font-weight:500}.dt,.own{color:var(--mute)}.em{padding:44px;text-align:center;color:var(--mute)}
+.st,.pr{display:inline-block;padding:2px 12px;border-radius:99px;font-size:12px;font-weight:600;width:max-content}
+.st.o{background:#dfeaff;color:#2563eb}.st.p{background:#fff0d2;color:#c27a00}.st.d{background:#d9f5e5;color:#16884a}
+.pr.h{background:#ffe0e0;color:#d1333a}.pr.m{background:#fff0d2;color:#c27a00}.pr.l{background:#eceff5;color:#5b6578}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.tab{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 16px;font-weight:500}.tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tabs select{width:auto;margin-left:auto}
+.pg{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:14px;color:var(--mute)}
+.fm{max-width:760px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.cc{text-align:right;color:var(--mute);font-size:12px}
+.dz{border:1.5px dashed #b9c6e2;border-radius:10px;padding:22px;text-align:center;color:var(--mute);cursor:pointer;background:#fafcff}
+.dz:hover,.dz.over{border-color:var(--b);background:var(--bl)}.dz b{color:var(--ink)}
+.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.fl:empty{display:none}
+.fc{background:var(--bl);color:var(--b2);border-radius:99px;padding:3px 6px 3px 12px;font-size:12.5px}.fc i{cursor:pointer;font-style:normal;padding:0 6px;font-size:15px}
+.ac{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.back{display:inline-block;margin-bottom:14px;color:var(--b);font-weight:500;cursor:pointer}
+.dh{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap}
+.tn{color:var(--mute);font-weight:600}.meta{display:flex;gap:12px;align-items:center;color:var(--mute);margin-top:6px;flex-wrap:wrap}.da{display:flex;gap:10px;align-items:center}
+.g3{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+.msg{display:flex;gap:12px;margin-bottom:18px}.mb{flex:1;background:#f7f9fd;border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.mb.sup{background:#fff}.av.sup{background:#5b6578}.mh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.mh small{color:var(--mute)}
+.mt{white-space:pre-wrap;margin-top:6px;overflow-wrap:anywhere}
+.rb{border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:6px}.rb textarea{border:0;padding:4px;resize:vertical}.rb textarea:focus{box-shadow:none}
+.ra{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.dl{display:grid;grid-template-columns:110px 1fr;gap:10px 8px;margin-top:12px;font-size:13.5px}.dl dt{color:var(--mute)}.dl dd{margin:0}
+.af{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-top:8px;color:var(--ink);text-decoration:none}
+.af:hover{background:#f6f9ff}.af small{color:var(--mute);margin-left:auto}
+.kb{display:grid;grid-template-columns:230px 1fr;gap:20px;align-items:start}
+.kc button{display:flex;justify-content:space-between;width:100%;border:0;background:transparent;padding:10px 12px;border-radius:8px;text-align:left}
+.kc button.on{background:var(--ink);color:#fff}.kc button:hover:not(.on){background:#eef2f9}
+.ka{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:16px;margin-bottom:12px}
+.ka:hover{background:#f6f9ff}.ka .ico{width:44px;height:44px;border-radius:10px;background:#f1f4fa;color:var(--ink);display:grid;place-items:center;flex:none}
+.ka small{color:var(--mute)}.tag{background:var(--bl);color:var(--b2);border-radius:5px;padding:1px 8px;font-size:12px;margin-right:8px}
+.art ol,.art ul{padding-left:20px}.art li{margin:6px 0}
+/* modal */
+.ov{position:fixed;inset:0;z-index:20;background:#0a1530a0;display:grid;place-items:center;padding:16px}
+.pn{position:relative;background:#fff;border-radius:14px;width:min(480px,100%);max-height:90vh;overflow:auto;padding:28px;animation:in .2s ease-out}
+.pn h3{font-size:20px;margin:0 30px 6px 0}
+@keyframes in{from{transform:translateY(12px);opacity:0}}
+.x{position:absolute;top:12px;right:12px;width:34px;height:34px;border:0;background:transparent;font-size:24px;color:var(--mute)}
+.qb{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;width:max-content;margin:16px auto}
+.nl{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;cursor:pointer}.nl:hover{background:#f6f9ff}.nl small{color:var(--mute);margin-left:auto;white-space:nowrap}
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:40;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;font-weight:500;box-shadow:0 10px 40px #0005;max-width:90vw}
+/* chat */
+#bf{position:fixed;right:24px;bottom:24px;z-index:15;width:56px;height:56px;border-radius:50%;padding:0;background:var(--ink);border:0;color:#fff;display:grid;place-items:center;box-shadow:0 10px 30px #0003}
+#bp{position:fixed;right:24px;bottom:92px;z-index:15;width:min(370px,calc(100vw - 32px));height:min(500px,70vh);background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;box-shadow:0 20px 60px #1a2a5033;overflow:hidden}
+.bh{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--ink);color:#fff}.bh button{border:0;background:transparent;color:#fff;font-size:22px}
+#bm{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.bm{max-width:86%;padding:9px 12px;border-radius:12px 12px 12px 3px;background:#fff;border:1px solid var(--line);white-space:pre-wrap}
+.bm.me{align-self:flex-end;border-radius:12px 12px 3px 12px;background:var(--ink);border-color:var(--ink);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 14px;background:var(--bg)}.chips button{padding:4px 11px;font-size:12.5px;border-radius:99px;border:1px solid var(--line);background:#fff;color:var(--mute)}
+#bform{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.bn{display:none}
+@media(max-width:1100px){.g2,.g3{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){
+ .sb{display:none}.mlogo{display:flex}.tb{padding:10px 14px}#ub span{display:none}#view{padding:18px 14px 100px}
+ .bn{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:10;background:#fff;border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+ .bn button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:transparent;color:var(--mute);font-size:11px;padding:4px}.bn button.on{color:var(--ink)}
+ .kb{grid-template-columns:1fr}.row2{grid-template-columns:1fr}
+ .r{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}.r.h,.own,.act{display:none}.r .id,.r .t{width:100%}.r .t{white-space:normal}
+ #bf{bottom:84px;right:16px}#bp{bottom:150px;right:16px}.tabs select{margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+
+<section id="login"><div class="lm"><div class="lw"><b>HELIX</b><small>TICKETING</small></div>
+<form id="lf"><label for="em">Email</label><input id="em" type="email" required autocomplete="username">
+<label for="pw">Password</label><input id="pw" type="password" required autocomplete="current-password">
+<div class="err" id="le"></div><button class="bt p">Sign in</button></form></div></section>
+
+<div id="app" class="hide">
+<aside class="sb"><div class="brand"><b>HELIX</b><small>TICKETING</small></div>
+<button class="nv" data-v="dash" data-go="dash"></button><button class="nv" data-v="tix" data-go="tix"></button>
+<button class="nv" data-v="new" data-go="new"></button><button class="nv" data-v="kb" data-go="kb"></button>
+<button class="nv" id="sq"></button><div class="sp"></div>
+<div class="sbu"><div class="av sa"></div><div><b class="sn"></b><small>Customer</small></div></div></aside>
+<div class="ws">
+<header class="tb"><div class="mlogo"><b>HELIX</b><small>TICKETING</small></div>
+<div class="sw" id="sw"></div><div class="sp"></div>
+<div class="bw"><button class="ib" id="bell" aria-label="Notifications"></button><span class="bdg hide" id="bb"></span></div>
+<div id="uw"><button id="ub"><div class="av sa"></div><span class="sn"></span></button>
+<div id="um" class="hide"><button id="um1"></button><button id="um2"></button></div></div></header>
+<main id="view"></main></div>
+<nav class="bn"><button data-v="dash" data-go="dash"></button><button data-v="tix" data-go="tix"></button><button data-v="new" data-go="new"></button><button data-v="kb" data-go="kb"></button></nav>
+</div>
+
+<button id="bf" class="hide" aria-label="Ask the Helix assistant"></button>
+<div id="bp" class="hide"><div class="bh"><b>Helix assistant</b><button id="bx" aria-label="Close assistant">&times;</button></div><div id="bm"></div>
+<div class="chips"><button data-q="How many tickets do I have?">How many tickets?</button><button data-q="Which tickets are in progress?">In progress</button><button data-q="Summarize my tickets">Summary</button></div>
+<form id="bform"><input id="bi" placeholder="Ask about your tickets" autocomplete="off" aria-label="Message"><button class="bt p">Send</button></form></div>
+<div id="m"></div><div id="toast" class="hide"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const I={home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v1M14 20h1M18 20h3v-3"/>',
+bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',clip:'<path d="M21 12l-9 9a5 5 0 0 1-7-7l9-9a3 3 0 0 1 4 4l-9 9a1 1 0 0 1-2-2l8-8"/>',
+up:'<path d="M16 16l-4-4-4 4M12 12v9"/><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.3"/>',check:'<path d="M20 6L9 17l-5-5"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',alert:'<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',chev:'<path d="M6 9l6 6 6-6"/>',
+head:'<path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="2" y="14" width="5" height="6" rx="2"/><rect x="17" y="14" width="5" height="6" rx="2"/>',
+file:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/>',chat:'<path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>'};
+const ic=(n,s=20)=>`<svg class="i" viewBox="0 0 24 24" width="${s}" height="${s}">${I[n]}</svg>`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ini=n=>String(n||'').split(/[\s@]+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('');
+const grp=s=>s==='closed'||s==='merged'?'done':s==='new'?'open':'progress';
+const GC={open:'o',progress:'p',done:'d'};
+const SL=s=>s==='new'?'Open':s==='open'?'In Progress':s.startsWith('pending')?'Pending':'Resolved';
+const stat=s=>`<span class="st ${GC[grp(s)]}">${SL(s)}</span>`;
+const PN=p=>({low:'Low',normal:'Medium',high:'High'}[String(p).replace(/^\d\s*/,'').toLowerCase()]||'Medium');
+const pri=p=>`<span class="pr ${PN(p)[0].toLowerCase()}">${PN(p)}</span>`;
+const own=o=>!o||o==='-'?'Unassigned':o.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+const d2=n=>String(n).padStart(2,'0');
+const fdt=d=>{const x=new Date(d);return `${x.getFullYear()}-${d2(x.getMonth()+1)}-${d2(x.getDate())} ${d2(x.getHours())}:${d2(x.getMinutes())}`};
+const fd=d=>fdt(d).slice(0,10);
+const rf=new Intl.RelativeTimeFormat([],{numeric:'auto'});
+function ago(d){const s=(new Date(d)-Date.now())/1000,a=Math.abs(s);return a<3600?rf.format(Math.round(s/60),'minute'):a<86400?rf.format(Math.round(s/3600),'hour'):rf.format(Math.round(s/86400),'day')}
+const kb_=n=>n==null?'':n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.remove('hide');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.add('hide'),2800)}
+async function api(p,o={}){const r=await fetch('/api'+p,{method:o.method||'GET',headers:{'Content-Type':'application/json'},body:o.body&&JSON.stringify(o.body)});
+ if(r.status===401&&p!=='/login'&&p!=='/me'){sessionStorage.setItem('exp','1');location.reload();return new Promise(()=>{})}
+ if(!r.ok){let m=r.statusText;try{const d=(await r.json()).detail;m=typeof d==='string'?d:'Please check the form and try again'}catch{}throw new Error(m)}return r.json()}
+const CATS=['Account','Technical','Network','Hardware','Billing','Feature Request','General'];
+const KB=[
+{t:'How to reset your password',c:'Account',m:2,d:'Get back into your account if you cannot sign in.',b:'<ol><li>Open the helpdesk sign-in page and choose <b>Forgot password</b>.</li><li>Enter your work email address.</li><li>Open the email we send and follow the link within 30 minutes.</li><li>Still locked out? Raise a ticket with the category <b>Account</b>.</li></ol>'},
+{t:'Troubleshooting sign-in problems',c:'Account',m:3,d:'Fix common login problems quickly.',b:'<ul><li>Check Caps Lock and that you are using your work email.</li><li>Try a private browser window to rule out saved data.</li><li>Wait 15 minutes after several failed attempts, then try again.</li><li>If it still fails, raise a ticket and include any error message.</li></ul>'},
+{t:'Connecting to the office VPN',c:'Network',m:3,d:'Steps to connect securely from home.',b:'<ol><li>Make sure your internet connection is working.</li><li>Open your VPN client and choose the company profile.</li><li>Sign in with your work account.</li><li>If it times out, restart the client and try again before raising a ticket.</li></ol>'},
+{t:'Wi-Fi keeps disconnecting',c:'Network',m:3,d:'What to try before contacting IT.',b:'<ul><li>Turn Wi-Fi off and on again, then forget and rejoin the network.</li><li>Move closer to the access point.</li><li>Restart your laptop.</li><li>Tell us the room and time it happens when you raise a ticket.</li></ul>'},
+{t:'Printer is not printing',c:'Hardware',m:2,d:'Quick checks for common printer faults.',b:'<ol><li>Check the printer has power, paper and no error light.</li><li>Cancel stuck jobs in the print queue.</li><li>Restart the printer and try again.</li><li>Raise a ticket with the printer name or label.</li></ol>'},
+{t:'Writing a good support ticket',c:'Tickets',m:2,d:'Help us fix your issue faster.',b:'<ul><li>Use a short, clear subject.</li><li>Describe what you expected and what happened.</li><li>Include error messages and when it started.</li><li>Attach a screenshot if you can.</li></ul>'},
+{t:'What do ticket statuses mean?',c:'Tickets',m:1,d:'Open, In Progress, Pending and Resolved explained.',b:'<ul><li><b>Open</b>: we received your ticket and it is waiting for an agent.</li><li><b>In Progress</b>: an agent is working on it.</li><li><b>Pending</b>: we are waiting for a reply or a scheduled follow-up.</li><li><b>Resolved</b>: the issue is closed. Raise a new ticket if it returns.</li></ul>'}];
+let T=[],U={},V='dash',ID=null,SQ='',TAB='all',SORT='new',PG=0,KC='All',NF=[],RF=[];const PS=8;
+const cnt=()=>{const n={open:0,progress:0,done:0};T.forEach(t=>n[grp(t.state)]++);return n};
+/* shell icons */
+[['dash','home','Dashboard'],['tix','list','My Tickets'],['new','plus','Create Ticket'],['kb','book','Knowledge Base']].forEach(([v,i,l])=>{
+ document.querySelectorAll(`.sb [data-v="${v}"]`).forEach(b=>b.innerHTML=ic(i)+l);
+ document.querySelectorAll(`.bn [data-v="${v}"]`).forEach(b=>b.innerHTML=ic(i,22)+`<span>${v==='tix'?'My Tickets':v==='new'?'Create':v==='kb'?'Knowledge':l}</span>`)});
+$('#sq').innerHTML=ic('qr')+'My login QR';$('#bell').innerHTML=ic('bell');$('#bf').innerHTML=ic('chat',26);
+$('#sw').innerHTML=ic('search',18)+'<input id="q" placeholder="Search tickets, subjects..." aria-label="Search">';
+$('#um1').innerHTML=ic('qr',18)+'My login QR';$('#um2').innerHTML=ic('out',18)+'Sign out';
+$('#ub').insertAdjacentHTML('beforeend',ic('chev',16));
+/* modal */
+function modal(h){$('#m').innerHTML=`<div class="ov" id="ov"><div class="pn"><button class="x" data-close aria-label="Close">&times;</button>${h}</div></div>`;$('#ov').onclick=e=>{if(e.target.id==='ov')closeM()}}
+function closeM(){$('#m').innerHTML=''}
+document.addEventListener('click',e=>{
+ const g=e.target.closest('[data-go]');if(g){closeM();go(g.dataset.go);return}
+ const t=e.target.closest('[data-t]');if(t){closeM();go('detail',t.dataset.t);return}
+ if(e.target.closest('[data-close]'))closeM();
+ if(!e.target.closest('#uw'))$('#um').classList.add('hide')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();if(e.key==='Enter'&&e.target.matches&&e.target.matches('.r.d'))go('detail',e.target.dataset.t)});
+$('#ub').onclick=()=>$('#um').classList.toggle('hide');
+$('#um1').onclick=()=>{$('#um').classList.add('hide');qrm()};
+async function logout(){await api('/logout',{method:'POST'});location.reload()}
+$('#um2').onclick=logout;$('#sq').onclick=()=>qrm();
+$('#q').addEventListener('input',e=>{SQ=e.target.value.trim().toLowerCase();PG=0;if(V!=='tix'&&V!=='kb')go('tix');else render()});
+$('#bell').onclick=()=>{const L=T.slice(0,6);modal(`<h3>Recent activity</h3><p class="sub">Your latest ticket updates.</p>${L.length?L.map(t=>`<div class="nl" data-t="${t.id}"><span class="id">#${esc(t.number)}</span><b>${esc(t.title)}</b>${stat(t.state)}<small>${ago(t.updated)}</small></div>`).join(''):'<div class="em">No tickets yet</div>'}`)};
+/* navigation */
+function go(v,a){V=v;ID=a;if(v!=='tix')PG=0;document.querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===(v==='detail'?'tix':v)));window.scrollTo(0,0);render()}
+function render(){({dash,tix,new:newv,kb,detail:()=>det(ID)})[V]()}
+async function load(){T=await api('/tickets');const b=T.filter(t=>Date.now()-new Date(t.updated)<864e5).length;const el=$('#bb');el.textContent=b;el.classList.toggle('hide',!b)}
+/* tables */
+function rows(L,c,empty){
+ const h=c==='c5'?['ID','Subject','Status','Priority','Created At']:['ID','Subject','Status','Priority','Assigned to','Created','Actions'];
+ return `<div class="tbl"><div class="r h ${c}">${h.map(x=>`<span>${x}</span>`).join('')}</div>`+(L.length?L.map(t=>`<div class="r d ${c}" data-t="${t.id}" tabindex="0"><span class="id">#${esc(t.number)}</span><span class="t">${esc(t.title)}</span>${stat(t.state)}${pri(t.priority)}${c==='c5'?`<span class="dt">${fdt(t.created)}</span>`:`<span class="own">${esc(own(t.owner))}</span><span class="dt">${fd(t.created)}</span><span class="act"><button class="bt s" data-t="${t.id}">View</button></span>`}</div>`).join(''):`<div class="em">${empty||'No tickets yet'}</div>`)+'</div>'}
+/* dashboard */
+function dash(){const n=cnt(),first=U.name.split(' ')[0];
+ const S=[['Total Tickets',T.length,'All your requests','b','list'],['Open',n.open,'Needs attention','g','alert'],['In Progress',n.progress,'Being worked on','o','clock'],['Resolved',n.done,'Completed','p','check']];
+ $('#view').innerHTML=`<h1 class="ph">Welcome back, ${esc(first)}!</h1><p class="sub">Here's an overview of your support requests.</p>
+ <div class="stats">${S.map(s=>`<div class="card sc"><div class="ico ${s[3]}">${ic(s[4],24)}</div><div><span>${s[0]}</span><b>${s[1]}</b><em>${s[2]}</em></div></div>`).join('')}</div>
+ <div class="g2"><div class="card"><div class="ch"><h2>Recent Tickets</h2><a data-go="tix">View All &rarr;</a></div>${rows(T.slice(0,5),'c5')}</div>
+ <div class="side"><div class="card help"><div class="ico">${ic('head',30)}</div><div><h2>Need Help?</h2><p>Create a ticket and our team will get back to you as soon as possible.</p><button class="bt p" data-go="new">Create New Ticket &rarr;</button></div></div>
+ <div class="card"><h2>Quick Actions</h2>
+ <button class="qa p" data-go="new"><span class="ico">${ic('plus')}</span><span><b>Create New Ticket</b><small>Get help with your issue</small></span></button>
+ <button class="qa" data-go="tix"><span class="ico">${ic('list')}</span><span><b>View My Tickets</b><small>Check status of your requests</small></span></button>
+ <button class="qa" data-go="kb"><span class="ico">${ic('book')}</span><span><b>Knowledge Base</b><small>Find answers to common questions</small></span></button></div></div></div>`}
+/* my tickets */
+function tix(){const n=cnt();
+ let L=T.filter(t=>(TAB==='all'||grp(t.state)===TAB)&&(!SQ||t.title.toLowerCase().includes(SQ)||t.number.includes(SQ)));
+ L=[...L].sort(SORT==='old'?(a,b)=>a.created.localeCompare(b.created):SORT==='upd'?(a,b)=>b.updated.localeCompare(a.updated):(a,b)=>b.created.localeCompare(a.created));
+ const pages=Math.max(1,Math.ceil(L.length/PS));PG=Math.min(PG,pages-1);
+ const tabs=[['all','All',T.length],['open','Open',n.open],['progress','In Progress',n.progress],['done','Resolved',n.done]];
+ $('#view').innerHTML=`<h1 class="ph">My Tickets</h1><p class="sub">View and manage all your support tickets.</p>
+ <div class="tabs">${tabs.map(t=>`<button class="tab ${TAB===t[0]?'on':''}" data-tab="${t[0]}">${t[1]} (${t[2]})</button>`).join('')}
+ <select id="so" aria-label="Sort"><option value="new">Sort by: Newest</option><option value="old">Sort by: Oldest</option><option value="upd">Sort by: Recently updated</option></select></div>
+ ${rows(L.slice(PG*PS,PG*PS+PS),'c7',T.length?'No tickets match':'No tickets yet')}
+ ${L.length>PS?`<div class="pg"><span>Page ${PG+1} of ${pages}</span><button class="bt" id="pv" ${PG?'':'disabled'}>Prev</button><button class="bt" id="nx" ${PG<pages-1?'':'disabled'}>Next</button></div>`:''}`;
+ $('#so').value=SORT;$('#so').onchange=e=>{SORT=e.target.value;PG=0;tix()};
+ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{TAB=b.dataset.tab;PG=0;tix()});
+ const pv=$('#pv'),nx=$('#nx');if(pv)pv.onclick=()=>{PG--;tix()};if(nx)nx.onclick=()=>{PG++;tix()}}
+/* attachments */
+function bindDrop(p,store){const z=$('#'+p+'z'),f=$('#'+p+'f'),l=$('#'+p+'l');
+ const show=()=>{l.innerHTML=store.map((x,i)=>`<span class="fc">${esc(x.name)}<i data-rm="${i}" title="Remove">&times;</i></span>`).join('')};
+ const add=async fs=>{for(const file of fs){if(store.length>=3){toast('You can attach up to 3 files');break}
+  if(file.size>5*1048576){toast(file.name+' is over 5 MB');continue}
+  const data=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(String(fr.result).split(',')[1]);fr.readAsDataURL(file)});
+  store.push({name:file.name,type:file.type,data})}show()};
+ z.onclick=()=>f.click();f.onchange=()=>{const a=[...f.files];f.value='';add(a)};
+ z.ondragover=e=>{e.preventDefault();z.classList.add('over')};z.ondragleave=()=>z.classList.remove('over');
+ z.ondrop=e=>{e.preventDefault();z.classList.remove('over');add([...e.dataTransfer.files])};
+ l.onclick=e=>{const i=e.target.dataset.rm;if(i!==undefined){store.splice(+i,1);show()}};show()}
+/* create ticket */
+function newv(){NF.length=0;
+ $('#view').innerHTML=`<h1 class="ph">Create a New Ticket</h1><p class="sub">Tell us what you need help with and we'll get back to you as soon as possible.</p>
+ <form id="tf" class="card fm" novalidate><label for="nt" style="margin-top:0">Subject <span class="req">*</span></label><input id="nt" maxlength="120" placeholder="Enter a short and clear subject" autocomplete="off">
+ <div class="row2"><div><label for="nc">Category <span class="req">*</span></label><select id="nc">${CATS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+ <div><label for="np">Priority <span class="req">*</span></label><select id="np"><option value="low">Low</option><option value="normal" selected>Medium</option><option value="high">High</option></select></div></div>
+ <label for="nd">Description <span class="req">*</span></label><textarea id="nd" rows="6" maxlength="1000" placeholder="Please provide more details about your issue..."></textarea><div class="cc" id="cc">0/1000</div>
+ <label>Attachments (optional)</label><div class="dz" id="nz">${ic('up',28)}<div><b>Drag and drop files here, or click to browse</b></div><small>Up to 3 files, max 5 MB each</small></div>
+ <input type="file" id="nf" multiple hidden><div class="fl" id="nl"></div>
+ <div class="err" id="ne"></div><div class="ac"><button type="button" class="bt" data-go="tix">Cancel</button><button class="bt p" id="ns">Submit Ticket</button></div></form>`;
+ bindDrop('n',NF);$('#nd').oninput=e=>$('#cc').textContent=e.target.value.length+'/1000';
+ let busy=false;
+ $('#tf').onsubmit=async e=>{e.preventDefault();if(busy)return;
+  const title=$('#nt').value.trim(),body=$('#nd').value.trim();
+  if(!title){$('#ne').textContent='Add a subject.';return}if(!body){$('#ne').textContent='Add some details.';return}
+  busy=true;$('#ns').disabled=true;$('#ns').textContent='Submitting...';$('#ne').textContent='';
+  try{const r=await api('/tickets',{method:'POST',body:{title,body,priority:$('#np').value,category:$('#nc').value,files:NF}});
+   NF.length=0;await load();toast(`Ticket #${r.number} submitted`);go('detail',String(r.id))}
+  catch(x){$('#ne').textContent=x.message;busy=false;$('#ns').disabled=false;$('#ns').textContent='Submit Ticket'}}}
+/* ticket detail */
+async function det(id){$('#view').innerHTML='<div class="em">Loading...</div>';let t;
+ try{t=await api('/tickets/'+id)}catch(e){if(V==='detail')$('#view').innerHTML=`<a class="back" data-go="tix">&larr; Back to My Tickets</a><div class="em">${esc(e.message)}</div>`;return}
+ if(V!=='detail'||ID!==id)return;RF.length=0;
+ const done=grp(t.state)==='done',atts=t.articles.flatMap(a=>a.attachments.map(f=>({...f,aid:a.id})));
+ $('#view').innerHTML=`<a class="back" data-go="tix">&larr; Back to My Tickets</a>
+ <div class="dh"><div><div class="tn">#${esc(t.number)}</div><h1 class="ph">${esc(t.title)}</h1>
+ <div class="meta">${ic('file',15)}<span>${esc(t.category)}</span>${pri(t.priority)}<span>Created at: ${fdt(t.created)}</span></div></div>
+ <div class="da">${stat(t.state)}${done?'':'<button class="bt r" id="cl">Close Ticket</button>'}</div></div>
+ <div class="g3"><div class="card">${t.articles.map(a=>{const me=a.sender==='Customer';return `<div class="msg"><div class="av ${me?'':'sup'}">${esc(ini(a.from)||'?')}</div><div class="mb ${me?'':'sup'}"><div class="mh"><b>${esc(a.from)}${me?' (Customer)':''}</b><small>${fdt(a.created)}</small></div><div class="mt">${esc(a.body)}</div></div></div>`}).join('')}
+ ${done?'<div class="em">This ticket is resolved. Raise a new ticket if you need more help.</div>':`<div class="rb"><textarea id="rb" rows="3" placeholder="Type a message..."></textarea><div class="fl" id="rl"></div><input type="file" id="rf" multiple hidden>
+ <div class="ra"><button type="button" class="ib" id="rz" title="Attach files">${ic('clip')}</button><button class="bt p" id="rs">Send</button></div></div>`}</div>
+ <div class="side"><div class="card"><h2>Ticket Details</h2><dl class="dl"><dt>Category</dt><dd>${esc(t.category)}</dd><dt>Priority</dt><dd>${pri(t.priority)}</dd><dt>Status</dt><dd>${stat(t.state)}</dd><dt>Created At</dt><dd>${fdt(t.created)}</dd><dt>Last Updated</dt><dd>${fdt(t.updated)}</dd><dt>Assigned to</dt><dd>${esc(own(t.owner))}</dd></dl></div>
+ <div class="card"><h2>Attachments</h2>${atts.length?atts.map(f=>`<a class="af" href="/api/tickets/${t.id}/files/${f.aid}/${f.id}" download>${ic('file',18)}<span>${esc(f.name)}</span><small>${kb_(f.size)}</small></a>`).join(''):'<p class="sub" style="margin:10px 0 0">No attachments uploaded</p>'}</div></div></div>`;
+ if(!done){bindDrop('r',RF);
+  $('#rs').onclick=async()=>{const b=$('#rb').value.trim(),bt=$('#rs');if((!b&&!RF.length)||bt.disabled)return;bt.disabled=true;
+   try{await api(`/tickets/${id}/reply`,{method:'POST',body:{body:b,files:RF}});RF.length=0;toast('Reply sent');await load();det(id)}catch(e){toast(e.message);bt.disabled=false}};
+  $('#cl').onclick=async()=>{if(!confirm('Close this ticket? You will not be able to reply afterwards.'))return;
+   try{await api(`/tickets/${id}/close`,{method:'POST'});toast('Ticket closed');await load();det(id)}catch(e){toast(e.message)}}}}
+/* knowledge base */
+function kb(){const cats=['All',...new Set(KB.map(a=>a.c))];
+ const L=KB.map((a,i)=>({...a,i})).filter(a=>(KC==='All'||a.c===KC)&&(!SQ||(a.t+' '+a.d).toLowerCase().includes(SQ)));
+ $('#view').innerHTML=`<h1 class="ph">Knowledge Base</h1><p class="sub">Find answers to common questions and get help with your issues.</p>
+ <div class="kb"><div class="card kc">${cats.map(c=>`<button class="${KC===c?'on':''}" data-kc="${c}"><span>${c==='All'?'All Articles':c}</span><span>${c==='All'?KB.length:KB.filter(a=>a.c===c).length}</span></button>`).join('')}</div>
+ <div>${L.length?L.map(a=>`<button class="ka" data-ka="${a.i}"><span class="ico">${ic('file',22)}</span><span><b>${esc(a.t)}</b><br><small>${esc(a.d)}</small><br><span class="tag">${a.c}</span><small>${a.m} min read</small></span></button>`).join(''):'<div class="em">No articles found</div>'}</div></div>`;
+ document.querySelectorAll('[data-kc]').forEach(b=>b.onclick=()=>{KC=b.dataset.kc;kb()});
+ document.querySelectorAll('[data-ka]').forEach(b=>b.onclick=()=>{const a=KB[b.dataset.ka];modal(`<h3>${esc(a.t)}</h3><p class="sub"><span class="tag">${a.c}</span>${a.m} min read</p><div class="art">${a.b}</div><div class="ac"><button class="bt" data-close>Close</button><button class="bt p" data-go="new">Still need help? Create ticket</button></div>`)})}
+/* personal QR */
+async function qrm(regen){
+ modal(`<h3>My login QR</h3><p class="sub">Scan this with your phone to sign in as <b>${esc(U.name)}</b> automatically. Keep it private: anyone who scans it can see your tickets.</p>
+ <div class="qb" id="qb">Loading...</div><input id="ql" readonly aria-label="Login link"><div class="sub" id="qd" style="margin:8px 0 0;font-size:12px"></div>
+ <div class="ac"><button class="bt" id="qg">Regenerate</button><button class="bt" id="qdl">Download</button><button class="bt p" id="qc">Copy link</button></div>`);
+ try{const r=await api(regen?'/qr/regenerate':'/qr/link',{method:regen?'POST':'GET'});
+  $('#qb').innerHTML=`<img src="/qr.svg?url=${encodeURIComponent(r.url)}" alt="Your login QR code" width="210" height="210">`;$('#ql').value=r.url;
+  $('#qd').textContent=`Valid for ${r.days} days. Regenerate to cancel the old code.`;
+  $('#qc').onclick=async()=>{try{await navigator.clipboard.writeText(r.url)}catch{$('#ql').select();document.execCommand('copy')}toast('Link copied')};
+  $('#qdl').onclick=()=>{const im=$('#qb img');if(!im||!im.complete||!im.naturalWidth&&!im.width)return toast('QR is still loading');
+   try{const n=840,p=60,c=document.createElement('canvas');c.width=c.height=n+p*2;const x=c.getContext('2d');
+    x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.imageSmoothingEnabled=false;x.drawImage(im,p,p,n,n);
+    c.toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='helix-login-qr.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('QR downloaded')})}
+   catch{toast('Could not download the QR')}};
+  $('#qg').onclick=()=>{if(confirm('Create a new QR code? The old one will stop working.'))qrm(true)}}
+ catch(e){$('#qb').textContent=e.message}}
+/* auth */
+async function boot(){
+ try{U=await api('/me')}catch{
+  const p=new URLSearchParams(location.search);
+  if(p.get('qr')==='invalid'){$('#le').textContent='That QR code is no longer valid. Sign in, then get a new one from My login QR.';history.replaceState(null,'','/')}
+  else if(sessionStorage.getItem('exp')){sessionStorage.removeItem('exp');$('#le').textContent='Your session expired. Please sign in again.'}
+  return}
+ document.querySelectorAll('.sa').forEach(x=>x.textContent=ini(U.name));document.querySelectorAll('.sn').forEach(x=>x.textContent=U.name);
+ $('#login').classList.add('hide');$('#app').classList.remove('hide');$('#bf').classList.remove('hide');
+ try{await load()}catch(e){toast(e.message)}go('dash')}
+$('#lf').onsubmit=async e=>{e.preventDefault();$('#le').textContent='';try{await api('/login',{method:'POST',body:{email:$('#em').value,password:$('#pw').value}});boot()}catch(x){$('#le').textContent=x.message}};
+/* chatbot */
+const BH=[];let greeted=false;
+function bmsg(t,me){const d=document.createElement('div');d.className='bm'+(me?' me':'');d.textContent=t;$('#bm').appendChild(d);$('#bm').scrollTop=1e9;return d}
+$('#bf').onclick=()=>{const p=$('#bp');p.classList.toggle('hide');if(!p.classList.contains('hide')){if(!greeted){greeted=true;bmsg('Hi, I am the Helix assistant. Ask me about your tickets.')}$('#bi').focus()}};
+$('#bx').onclick=()=>$('#bp').classList.add('hide');
+async function ask(t){bmsg(t,1);const w=bmsg('Thinking...');
+ try{const r=await api('/chat',{method:'POST',body:{message:t,history:BH.slice(-6)}});w.textContent=r.reply;BH.push({role:'user',content:t},{role:'assistant',content:r.reply})}
+ catch(e){w.textContent='Sorry, I could not answer that. '+e.message}$('#bm').scrollTop=1e9}
+$('#bform').onsubmit=e=>{e.preventDefault();const t=$('#bi').value.trim();if(t){$('#bi').value='';ask(t)}};
+document.querySelector('.chips').onclick=e=>{const b=e.target.closest('button');if(b)ask(b.dataset.q)};
+boot();
+</script><script src="/assistant.js"></script><script src="/admin.js"></script></body></html>

@@ -1,0 +1,39 @@
+---
+name: Update Dependencies via Updatecli
+
+on:
+  schedule:
+    - cron: '0 2 * * 2' # every Tuesday at 2:00 am
+  workflow_dispatch:
+
+permissions:
+  # Required by Updatecli to create Git Commit(s)
+  contents: "write"
+  # Required by Updatecli to open GitHub pull request
+  pull-requests: "write"
+  # Required by Updatecli to update GitHub action workflows
+  actions: "write"
+
+jobs:
+  updatecli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Updatecli
+        uses: updatecli/updatecli-action@v2
+
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.UPDATECLI_APP_ID }}
+          private-key: ${{ secrets.UPDATECLI_APP_PRIVATE_KEY }}
+
+      - name: Run Updatecli
+        run: |
+          updatecli pipeline apply --config .github/updatecli.yaml --values .github/updatecli-values-enable-github.yaml
+        env:
+          UPDATECLI_GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          UPDATECLI_GITHUB_ACTOR: ${{ github.actor }}

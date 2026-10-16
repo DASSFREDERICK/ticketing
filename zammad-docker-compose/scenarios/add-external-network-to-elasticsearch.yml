@@ -1,0 +1,16 @@
+---
+#
+# Adds an external network to Zammad's elasticsearch container, for example to
+#   share it with services from another stack.
+#
+
+services:
+  zammad-elasticsearch:
+    networks:
+      - default
+      - zammad-elasticsearch-external-network
+
+networks:
+  zammad-elasticsearch-external-network:
+    external: true
+    name: ${ZAMMAD_ELASTICSEARCH_EXTERNAL_NETWORK}
